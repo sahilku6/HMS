@@ -1,11 +1,14 @@
 services:
   react-app:
-    build: .
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: hms_application:latest
     ports:
-      - "5173:5173" 
+      - "5173:5173"
     volumes:
-      - .:/app
+      - ./frontend:/app
       - /app/node_modules
-    container_name: HMS_React_App
+    container_name: hms_container
     environment:
       - CHOKIDAR_USEPOLLING=true
