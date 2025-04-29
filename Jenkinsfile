@@ -19,15 +19,16 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image..."
-                bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% ./frontend'
+                // Added --network=host to fix DNS issues during npm install
+                bat "docker build --network=host -t %IMAGE_NAME%:%IMAGE_TAG% ./frontend"
             }
         }
 
         stage('Run App with Docker Compose') {
             steps {
                 echo "Running app using docker-compose..."
-                bat 'docker-compose down'
-                bat 'docker-compose up -d --build'
+                bat "docker-compose down"
+                bat "docker-compose up -d --build"
             }
         }
     }
