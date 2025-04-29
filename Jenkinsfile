@@ -19,29 +19,17 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image..."
-                bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ./frontend"
+                bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% ./frontend'
             }
         }
 
         stage('Run App with Docker Compose') {
             steps {
                 echo "Running app using docker-compose..."
-                bat "docker-compose down"
-                bat "docker-compose up -d --build"
+                bat 'docker-compose down'
+                bat 'docker-compose up -d --build'
             }
         }
-
-        /*
-        stage('Push Docker Image to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
-                    bat 'docker tag %IMAGE_NAME%:%IMAGE_TAG% %DOCKER_USER%/%IMAGE_NAME%:%IMAGE_TAG%'
-                    bat 'docker push %DOCKER_USER%/%IMAGE_NAME%:%IMAGE_TAG%'
-                }
-            }
-        }
-        */
     }
 
     post {
