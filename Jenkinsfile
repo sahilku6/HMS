@@ -8,6 +8,10 @@ pipeline {
         GIT_REPO_URL = "https://github.com/sahilku6/HMS.git"
     }
 
+    triggers {
+        githubPush() // Trigger the pipeline on GitHub push events
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
@@ -16,19 +20,38 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Stop Previous Containers') {
             steps {
-                echo "Building Docker image..."
-                // Added --network=host to fix DNS issues during npm install
-                bat "docker build --network=host -t %IMAGE_NAME%:%IMAGE_TAG% ./frontend"
+                echo "Stopping and removing existing containers (if any)..."
+                bat 'docker-compose down || exit 0'
             }
         }
 
-        stage('Run App with Docker Compose') {
+        stage('Build and Run with Docker Compose') {
             steps {
-                echo "Running app using docker-compose..."
-                bat "docker-compose down"
-                bat "docker-compose up -d --build"
+                echo "Building and starting app with Docker Compose..."
+                bat 'docker-compose up -d --build'
+            }
+        }
+
+        stage('Show Running Containers') {
+            steps {
+                echo "Listing running containers..."
+                bat 'docker ps'
+            }
+        }
+
+        stage('Run Tests (Optional)') {
+            steps {
+                echo "Running tests inside container (if available)..."
+                bat 'docker exec %CONTAINER_NAME% npm test || echo "No tests or tests failed."'
+            }
+        }
+
+        stage('Cleanup Docker System (Optional)') {
+            steps {
+                echo "Cleaning up unused Docker resources..."
+                bat 'docker system prune -f'
             }
         }
     }
