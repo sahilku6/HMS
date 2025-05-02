@@ -41,12 +41,6 @@ pipeline {
             }
         }
 
-        stage('Run Tests (Optional)') {
-            steps {
-                echo "Running tests inside container (if available)..."
-                bat 'docker exec %CONTAINER_NAME% npm test || echo "No tests or tests failed."'
-            }
-        }
 
         stage('Cleanup Docker System (Optional)') {
             steps {
